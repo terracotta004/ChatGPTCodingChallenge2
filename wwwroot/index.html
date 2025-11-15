@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatGPT Coding Challenge 2 App</title>
+
+<!-- <link rel="stylesheet" href="/kendo/styles/kendo.common.min.css" />
+<link rel="stylesheet" href="/kendo/styles/kendo.default-v2.min.css" /> -->
+
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/12.2.3/default/default-main.css" />
+
+    <script src="scripts.js" defer></script>
+
+</head>
+
+<body>
+
+<!-- <h2>Login</h2>
+<input id="username" placeholder="username">
+<input id="password" type="password" placeholder="password">
+<button onclick="login()">Login</button> -->
+
+<div class="k-card" style="max-width: 400px; margin: 40px auto; padding: 20px;">
+    <div class="k-card-header">
+        <h3 class="k-card-title">Login</h3>
+    </div>
+
+    <div class="k-card-body">
+        <label class="k-label" for="username">Username</label>
+        <input id="username" name="username" />
+
+        <label class="k-label" for="password" style="margin-top: 15px;">Password</label>
+        <input id="password" type="password" name="password" />
+
+        <button onclick="login()" id="loginButton" class="k-button k-primary" style="margin-top: 20px; width: 100%;">
+            Login
+        </button>
+    </div>
+</div>
+
+<hr/>
+
+<!-- <h2>Load GitHub Repos</h2>
+<input id="githubUser" placeholder="GitHub username">
+<button onclick="loadRepos()">Load Repos</button> -->
+
+<div class="k-card" style="max-width: 600px; margin: 40px auto; padding: 20px;">
+    <div class="k-card-header">
+        <h3 class="k-card-title">Load GitHub Repositories</h3>
+    </div>
+
+    <div class="k-card-body">
+        <label class="k-label" for="githubUsername">GitHub Username</label>
+        <input id="githubUsername" name="githubUsername" />
+
+        <button onclick="loadRepos()" type="button" id="loadRepos" class="k-button k-primary" style="margin-top: 20px;">
+            Load Repos
+        </button>
+    </div>
+</div>
+
+<div id="repoGrid" style="margin-top: 20px;"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/kendo/js/kendo.all.min.js"></script>
+<script src="/kendo/js/telerik-license.js"></script>
+
+</body>
+</html>

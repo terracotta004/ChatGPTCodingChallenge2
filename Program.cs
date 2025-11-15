@@ -1,6 +1,6 @@
 using ChatGPTCodingChallenge2.Data;
-using ChatGPTCodingChallenge2.Services;
 using ChatGPTCodingChallenge2.Models;
+using ChatGPTCodingChallenge2.Services;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -11,72 +11,59 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ------------------------------------------------------
+// -------------------------------------------------------------------
 // Database
-// ------------------------------------------------------
+// -------------------------------------------------------------------
 builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlite("Data Source=chatgptcodingchallenge2.db")
 );
 
-// ------------------------------------------------------
-// Configure strongly-typed JWT options
-// ------------------------------------------------------
-builder.Services.Configure<JwtOptions>(
-    builder.Configuration.GetSection("Jwt")
-);
-
-var jwtOptions = builder.Configuration
-    .GetSection("Jwt")
-    .Get<JwtOptions>()!; // Guaranteed non-null because of `required`
-
+// -------------------------------------------------------------------
+// JWT Configuration
+// -------------------------------------------------------------------
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()!;
 var keyBytes = Encoding.UTF8.GetBytes(jwtOptions.Key);
 
-// ------------------------------------------------------
-// Dependency Injection
-// ------------------------------------------------------
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddHttpClient<GitHubApiService>(client =>
-{
-    client.DefaultRequestHeaders.UserAgent.ParseAdd("ChatGPTCodingChallenge2");
-});
-
-// ------------------------------------------------------
+// -------------------------------------------------------------------
 // Authentication
-// ------------------------------------------------------
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// -------------------------------------------------------------------
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidIssuer = jwtOptions.Issuer,
-
             ValidateAudience = true,
             ValidAudience = jwtOptions.Audience,
-
             ValidateLifetime = true,
-
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
         };
     });
 
-// ------------------------------------------------------
-// MVC & Swagger
-// ------------------------------------------------------
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
+// -------------------------------------------------------------------
+// Services
+// -------------------------------------------------------------------
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddHttpClient<GitHubApiService>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("ChatGPTCodingChallenge2");
+});
+
+// -------------------------------------------------------------------
+// Swagger with JWT Support
+// -------------------------------------------------------------------
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "ChatGPTCodingChallenge2 API", Version = "v1" });
 
-    // Add JWT Authentication to Swagger
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Enter JWT token like this: Bearer {your token}",
+        Description = "Enter: Bearer {token}",
         Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
@@ -97,10 +84,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// MVC
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
-// ------------------------------------------------------
-// Build and configure HTTP pipeline
-// ------------------------------------------------------
 var app = builder.Build();
 
 app.UseSwagger();
@@ -109,6 +96,9 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseStaticFiles();
 app.MapControllers();
 
+
+// -----------------------------------------------
 app.Run();
