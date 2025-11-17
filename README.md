@@ -5,3 +5,4 @@
 - An example of consuming an external API asynchronously
 - Clean architecture structure
 - Swagger with authentication support
+- Kendo UI
