@@ -63,3 +63,55 @@ $(document).ready(function () {
     $("#githubUsername").kendoTextBox();
     $("#loadRepos").kendoButton();
 });
+
+$(document).ready(function () {
+    $("#repoGrid").kendoGrid();
+});
+
+$(document).ready(function () {
+    $("#ca-username").kendoTextBox();
+    $("#ca-password").kendoTextBox();
+    $("#ca-confirm").kendoTextBox();
+    $("#createAccountButton").kendoButton();
+});
+
+async function createAccount() {
+    const username = document.getElementById("ca-username").value.trim();
+    const password = document.getElementById("ca-password").value;
+    const confirm = document.getElementById("ca-confirm").value;
+
+    if (!username || !password || !confirm) {
+        alert("Please fill out all fields.");
+        return;
+    }
+
+    if (password !== confirm) {
+        alert("Passwords do not match.");
+        return;
+    }
+
+    try {
+        const response = await fetch("/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            alert("Registration failed: " + errorText);
+            return;
+        }
+
+        alert("Account created! You may now login.");
+        window.location.href = "index.html";
+
+    } catch (err) {
+        alert("Error connecting to server: " + err);
+    }
+}
