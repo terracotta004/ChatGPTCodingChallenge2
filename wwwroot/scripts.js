@@ -149,13 +149,15 @@ async function loadXmlRepos() {
                 </div>
 
                 <div class="k-card-actions k-card-actions-stretched">
-                    <a href="${url}" target="_blank" class="k-button k-button-solid-base">
+                    <a href="${url}" target="_blank" class="xml-repo-button k-button k-button-solid-base">
                         View Repo
                     </a>
                 </div>
             `;
 
             output.appendChild(card);
+            $(".xml-repo-button").kendoButton();
+
         });
 
     } catch (err) {
