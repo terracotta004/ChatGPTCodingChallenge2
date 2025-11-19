@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<repositories>
+  <repo>
+    <name>ChatGPTCodingChallenge2</name>
+    <description>Sample repository loaded from XML.</description>
+    <stars>42</stars>
+    <url>https://github.com/terracotta004/ChatGPTCodingChallenge2</url>
+  </repo>
+  <repo>
+    <name>ExampleProject</name>
+    <description>Another example repo from XML data.</description>
+    <stars>17</stars>
+    <url>https://github.com/example/ExampleProject</url>
+  </repo>
+</repositories>

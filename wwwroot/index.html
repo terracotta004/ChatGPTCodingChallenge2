@@ -62,6 +62,29 @@
 
 <div id="repoGrid" style="margin-top: 20px;"></div>
 
+<hr />
+
+<section id="xml-section" style="max-width: 600px; margin: 40px auto; padding: 20px;">
+  <div class="k-card k-card-type-rich">
+    <div class="k-card-header">
+      <h2 class="k-card-title">XML Demo</h2>
+      <p class="k-card-subtitle">Loads repository data from repos.xml</p>
+    </div>
+
+    <div class="k-card-body">
+      <button id="loadXmlBtn" class="k-button k-button-solid-primary" onclick="loadXmlRepos()">
+        Load XML Repositories
+      </button>
+
+      <div id="xmlOutput" style="margin-top: 1rem;">
+        <!-- Kendo cards will be inserted here -->
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="/kendo/js/kendo.all.min.js"></script>
 <script src="/kendo/js/telerik-license.js"></script>

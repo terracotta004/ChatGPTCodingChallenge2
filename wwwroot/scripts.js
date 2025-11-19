@@ -1,5 +1,8 @@
 let token = null;
 
+/* ============================
+   AUTH: LOGIN
+   ============================ */
 async function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -20,6 +23,9 @@ async function login() {
     }
 }
 
+/* ============================
+   GITHUB REPOS
+   ============================ */
 async function loadRepos() {
     if (!token) {
         alert("Please login first.");
@@ -53,28 +59,9 @@ async function loadRepos() {
     });
 }
 
-$(document).ready(function () {
-    $("#username").kendoTextBox();
-    $("#password").kendoTextBox();
-    $("#loginButton").kendoButton();
-});
-
-$(document).ready(function () {
-    $("#githubUsername").kendoTextBox();
-    $("#loadRepos").kendoButton();
-});
-
-$(document).ready(function () {
-    $("#repoGrid").kendoGrid();
-});
-
-$(document).ready(function () {
-    $("#ca-username").kendoTextBox();
-    $("#ca-password").kendoTextBox();
-    $("#ca-confirm").kendoTextBox();
-    $("#createAccountButton").kendoButton();
-});
-
+/* ============================
+   ACCOUNT CREATION
+   ============================ */
 async function createAccount() {
     const username = document.getElementById("ca-username").value.trim();
     const password = document.getElementById("ca-password").value;
@@ -93,13 +80,8 @@ async function createAccount() {
     try {
         const response = await fetch("/auth/register", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
         });
 
         if (!response.ok) {
@@ -115,3 +97,96 @@ async function createAccount() {
         alert("Error connecting to server: " + err);
     }
 }
+
+/* ============================
+   XML REPOS (KENDO CARDS)
+   ============================ */
+async function loadXmlRepos() {
+    const output = document.getElementById("xmlOutput");
+    output.textContent = "Loading XML...";
+
+    try {
+        const response = await fetch("repos.xml");
+        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+
+        const xmlText = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+
+        const parseError = xmlDoc.getElementsByTagName("parsererror")[0];
+        if (parseError) {
+            output.textContent = "Error parsing XML.";
+            return;
+        }
+
+        const repoNodes = Array.from(xmlDoc.getElementsByTagName("repo"));
+
+        if (repoNodes.length === 0) {
+            output.textContent = "No <repo> elements found in XML.";
+            return;
+        }
+
+        output.innerHTML = "";
+
+        repoNodes.forEach(repoNode => {
+            const name = repoNode.getElementsByTagName("name")[0]?.textContent ?? "";
+            const description = repoNode.getElementsByTagName("description")[0]?.textContent ?? "";
+            const stars = repoNode.getElementsByTagName("stars")[0]?.textContent ?? "";
+            const url = repoNode.getElementsByTagName("url")[0]?.textContent ?? "";
+
+            const card = document.createElement("div");
+            card.className = "k-card k-card-type-rich";
+            card.style.marginBottom = "1rem";
+
+            card.innerHTML = `
+                <div class="k-card-header">
+                    <h3 class="k-card-title">${name}</h3>
+                    <p class="k-card-subtitle">${stars} &#11088;</p>
+                </div>
+
+                <div class="k-card-body">
+                    <p>${description}</p>
+                </div>
+
+                <div class="k-card-actions k-card-actions-stretched">
+                    <a href="${url}" target="_blank" class="k-button k-button-solid-base">
+                        View Repo
+                    </a>
+                </div>
+            `;
+
+            output.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error(err);
+        output.textContent = "Failed to load XML data.";
+    }
+}
+
+/* ============================
+   KENDO UI INITIALIZATION
+   ============================ */
+$(document).ready(function () {
+
+    // Login
+    $("#username").kendoTextBox();
+    $("#password").kendoTextBox();
+    $("#loginButton").kendoButton();
+
+    // GitHub section
+    $("#githubUsername").kendoTextBox();
+    $("#loadRepos").kendoButton();
+
+    // Repo Grid
+    $("#repoGrid").kendoGrid();
+
+    // Create Account
+    $("#ca-username").kendoTextBox();
+    $("#ca-password").kendoTextBox();
+    $("#ca-confirm").kendoTextBox();
+    $("#createAccountButton").kendoButton();
+
+    // XML Loader
+    $("#loadXmlBtn").kendoButton();
+});
